@@ -1,4 +1,4 @@
-name: Android Build (Safe Gradle Installer)
+name: Android Build (2025 Compatible)
 
 on:
   push:
@@ -20,16 +20,16 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Install Gradle if missing
-      uses: gradle/gradle-build-action@v3
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
       with:
-        gradle-version: 8.6
+        gradle-version: 8.7
 
     - name: Grant execute permission for gradlew (ignore if missing)
       run: |
         if [ -f gradlew ]; then chmod +x gradlew; fi
 
-    - name: Build APK safely
+    - name: Build APK
       run: |
         if [ -f gradlew ]; then
           ./gradlew assembleDebug --stacktrace
@@ -37,7 +37,7 @@ jobs:
           gradle assembleDebug --stacktrace
         fi
 
-    - name: Upload generated APK
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: mishu_musicplayer-apk
