@@ -1,4 +1,4 @@
-name: Android Build (2025 Compatible)
+name: Android Build (Final Stable)
 
 on:
   push:
@@ -25,20 +25,11 @@ jobs:
       with:
         gradle-version: 8.7
 
-    - name: Grant execute permission for gradlew (ignore if missing)
+    - name: Verify project structure
       run: |
-        if [ -f gradlew ]; then chmod +x gradlew; fi
+        echo "Current directory:"
+        pwd
+        echo "List files:"
+        ls -R
 
-    - name: Build APK
-      run: |
-        if [ -f gradlew ]; then
-          ./gradlew assembleDebug --stacktrace
-        else
-          gradle assembleDebug --stacktrace
-        fi
-
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: mishu_musicplayer-apk
-        path: app/build/outputs/apk/debug/*.apk
+    - name: Grant execute permission
