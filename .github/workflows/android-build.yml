@@ -1,4 +1,4 @@
-name: Android Build
+name: Android Build (Safe Gradle Installer)
 
 on:
   push:
@@ -11,21 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-    - name: Set up JDK
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Install Gradle if missing
+      uses: gradle/gradle-build-action@v3
+      with:
+        gradle-version: 8.6
 
-    - name: Build APK
-      run: ./gradlew assembleDebug --stacktrace
+    - name: Grant execute permission for gradlew (ignore if missing)
+      run: |
+        if [ -f gradlew ]; then chmod +x gradlew; fi
 
-    - name: Upload APK artifact
+    - name: Build APK safely
+      run: |
+        if [ -f gradlew ]; then
+          ./gradlew assembleDebug --stacktrace
+        else
+          gradle assembleDebug --stacktrace
+        fi
+
+    - name: Upload generated APK
       uses: actions/upload-artifact@v4
       with:
         name: mishu_musicplayer-apk
